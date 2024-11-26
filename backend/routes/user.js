@@ -8,6 +8,10 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const { authMiddleware } = require("../middleware");
 
+if (!JWT_SECRET) {
+    console.error("JWT_SECRET is not defined in environment variables");
+}
+
 const signupBody = zod.object({
     username: zod.string().email(),
     firstName: zod.string(),
@@ -18,8 +22,10 @@ const signupBody = zod.object({
 
 router.post("/signup", async (req, res) => {
     try {
+        console.log("Signup request body:", req.body);
         const { success } = signupBody.safeParse(req.body)
         if (!success) {
+            console.log("Validation failed");
             return res.status(411).json({
                 success: false,
                 message: "Invalid input format"
@@ -53,13 +59,16 @@ router.post("/signup", async (req, res) => {
         const token = jwt.sign({
             userId
         }, JWT_SECRET);
-
+        
+        console.log("Generated token:", token);
+        
         res.json({
             success: true,
             message: "User created successfully",
             token: token
         })
     } catch (error) {
+        console.error("Signup error:", error);
         return res.status(500).json({
             success: false,
             message: "Internal server error"

@@ -1,19 +1,10 @@
-const router = require("express").Router();
-const userRoutes = require("./user.js");
-const { authMiddleware } = require("../middleware");
+const express = require('express');
+const router = express.Router();
 
-// Public routes
-router.post("/user/signup", userRoutes);
-router.post("/user/signin", userRoutes);
+const userRouter = require("./user");
+const accountRouter = require("./account");
 
-// Protected routes
-router.use("/user", authMiddleware, userRoutes);
-
-router.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        message: "Route not found"
-    });
-});
+router.use("/user", userRouter);
+router.use("/account", accountRouter);
 
 module.exports = router;
