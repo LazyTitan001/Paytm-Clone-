@@ -1,13 +1,13 @@
 const router = require("express").Router();
-
-
-router.use("/user/signup", require("./user.js"));
-router.use("/user/signin", require("./user.js"));
-
-
+const userRoutes = require("./user.js");
 const { authMiddleware } = require("../middleware");
-router.use("/user", authMiddleware, require("./user.js"));
 
+// Public routes
+router.post("/user/signup", userRoutes);
+router.post("/user/signin", userRoutes);
+
+// Protected routes
+router.use("/user", authMiddleware, userRoutes);
 
 router.use((req, res) => {
     res.status(404).json({
