@@ -1,6 +1,9 @@
-import mongoose from "mongoose";
+require('dotenv').config();
+const mongoose = require("mongoose");
 
-mongoose.connect(process.env.mongodb);
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.error('MongoDB connection error:', err));
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -25,4 +28,20 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-export const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+const accountSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    balance: {
+        type: Number,
+        required: true
+    }
+});
+
+const Account = mongoose.model('Account', accountSchema);
+
+module.exports = { User, Account };
